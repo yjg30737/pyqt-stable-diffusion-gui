@@ -1,0 +1,9 @@
+PyQt5>=5.14
+PySide6
+qtpy
+diffusers>=0.17.1
+torch
+pillow
+transformers
+accelerate
+huggingface_hub
