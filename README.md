@@ -9,6 +9,8 @@ This is the result of my personal testing on how to create a program using PyQt 
 
 I kindly ask you to give it a try!
 
+And if you want to give me any feedback or have trouble to install this send me an email or better yet, join the discord channel above :)
+
 ## Requirements
 ### PyQt, PySide related 
 * PyQt5>=5.14
