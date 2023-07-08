@@ -1,5 +1,13 @@
 # pyqt-stable-diffusion-gui
+[![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
+
 PyQt(+PySide) Stable Diffusion GUI
+
+This program allows you to generate AI images based on Stable Diffusion using a PyQt application.
+
+This is the result of my personal testing on how to create a program using PyQt that can smoothly generate AI images.
+
+I kindly ask you to give it a try!
 
 ## Requirements
 ### PyQt, PySide related 
