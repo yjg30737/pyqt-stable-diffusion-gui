@@ -317,10 +317,6 @@ class MainWindow(QMainWindow):
         self.__t.generateFailed.connect(self.__generateFailed)
         self.__t.start()
 
-        # calculate installed model size in the huggingface widget (if it is installed partially)
-        self.__huggingFaceModelWidget.setCacheDir(cache_dir)
-        self.__huggingFaceModelWidget.selectCurrentModel(model_name=self.__current_model)
-
     def __toggleWidgetByRunning(self, f: bool):
         self.__huggingFaceModelWidgetScrollAreaOuterWidget.setEnabled(f)
         self.__settingsOuterWidget.setEnabled(f)
