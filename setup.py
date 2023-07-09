@@ -27,7 +27,7 @@ setup(
         'torch',
         'pillow',
         'transformers',
-        'accelerate',
+        'accelerate>=0.17.0',
         'huggingface_hub'
     ]
 )
