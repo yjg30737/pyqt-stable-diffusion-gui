@@ -20,7 +20,7 @@ And if you want to give me any feedback or have trouble to install this send me 
 * diffusers>=0.17.1
 * torch
 * pillow
-* transformers
+* transformers>=0.17.0
 * accelerate
 * huggingface_hub
 
