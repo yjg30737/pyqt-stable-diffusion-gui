@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pyqt_svg_button import SvgButton
+from svgButton import SvgButton
 from transformers import TRANSFORMERS_CACHE
 
 from settingsWidget import SettingsWidget
