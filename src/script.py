@@ -37,11 +37,15 @@ def image_to_grid(images, rows, cols):
     return grid
 
 def generate_image(pipeline, **args):
-    # clear cache to avoid OutOfMemoryError
+    # clear cache to avoid OutOfMemoryError (before image generation)
     gc.collect()
     torch.cuda.empty_cache()
 
     images = pipeline(**args).images
+
+    # clear cache to avoid OutOfMemoryError (after image generation)
+    gc.collect()
+    torch.cuda.empty_cache()
     return images
 
 def save_image(images, prompt, model_id, ext='.png', save_path='.', suffix=''):
