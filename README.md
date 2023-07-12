@@ -32,4 +32,17 @@ And if you want to give me any feedback or have trouble to install this send me 
 5. python main.py
  
 ## Preview
+### GUI
 ![image](https://github.com/yjg30737/pyqt-stable-diffusion-gui/assets/55078043/f509ab2a-3076-44ad-ae58-faad4fd838d8)
+### Image Result
+Model name: Linaqruf_anything-v3.0
+
+<img src="https://github.com/yjg30737/pyqt-stable-diffusion-gui/assets/55078043/81047351-1a08-46d8-a590-ce22c4f44c0f" width=1024 height=1024>
+
+Model name: SG161222/Realistic_Vision_V1.4
+
+<img src="https://github.com/yjg30737/pyqt-stable-diffusion-gui/assets/55078043/4686d60c-1d7b-48fe-ba08-c220bdabf3c0" width=1024 height=768>
+
+
+
+
