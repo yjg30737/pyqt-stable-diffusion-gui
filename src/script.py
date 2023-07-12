@@ -21,10 +21,16 @@ def generate_random_string(length):
     letters = string.ascii_letters + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
 
+def replace_invalid_characters(filename):
+    invalid_chars = r'\/:*?"<>|'
+    for char in invalid_chars:
+        filename = filename.replace(char, '_')
+    return filename
+
 def get_filename(prompt, cnt, ext, width, height, model_id, suffix=''):
     # replace slash with lowdash from model_id
     model_id = model_id.replace('/', '_')
-    return f"{'_'.join(map(lambda x: x.replace(',', ''), prompt.split()[:cnt]))}({width}x{height})-{model_id}_{suffix}{ext}"
+    return replace_invalid_characters(f"{'_'.join(map(lambda x: x.replace(',', ''), prompt.split()[:cnt]))}({width}x{height})-{model_id}_{suffix}{ext}")
 
 def image_to_grid(images, rows, cols):
     assert len(images) == rows * cols
