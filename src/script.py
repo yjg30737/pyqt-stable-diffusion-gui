@@ -81,5 +81,3 @@ def open_directory(path):
 
 def get_info(lora_path):
     return [info.rfilename for info in list_files_info(lora_path) if info.lfs is not None]
-
-print(get_info('datamonet/St_Louis_Luxurious_Wheels_Azur_Lane'))
