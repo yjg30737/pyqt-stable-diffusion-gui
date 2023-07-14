@@ -8,7 +8,7 @@ from qtpy.QtWidgets import QLineEdit, QMenu, QAction
 from qtpy.QtWidgets import QWidget, QFormLayout, QComboBox, QCheckBox, QGroupBox, QVBoxLayout, \
     QRadioButton, QHBoxLayout, QScrollArea, QPushButton, QFileDialog
 
-from src.twoColCmbBox import TwoColComboBox
+from twoColCmbBox import TwoColComboBox
 
 
 class FindPathLineEdit(QLineEdit):
@@ -211,11 +211,11 @@ class SettingsWidget(QScrollArea):
         sep.setFrameShape(QFrame.HLine)
         sep.setFrameShadow(QFrame.Sunken)
 
-        self.__samplerCmbBox = TwoColComboBox(['PNDMScheduler',
-                ['DPMSolverMultistepScheduler', 'the GOAT'],
-                'DPMSolverSinglestepScheduler',
+        self.__samplerCmbBox = TwoColComboBox([['PNDMScheduler', 'Default scheduler'],
+                ['DPMSolverMultistepScheduler', 'the best speed/quality trade-off'],
+                ['DPMSolverSinglestepScheduler', ''],
                 ['LMSDiscreteScheduler', 'usually leads to better results'],
-                'HeunDiscreteScheduler',
+                ['HeunDiscreteScheduler', ''],
                 ['EulerDiscreteScheduler', 'generate high quality results with as little as 30 steps'],
                 ['EulerAncestralDiscreteScheduler', 'generate high quality results with as little as 30 steps']])
         self.__samplerCmbBox.setCurrentText(self.__sampler)

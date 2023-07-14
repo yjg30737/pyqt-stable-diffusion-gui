@@ -52,6 +52,7 @@ class StableDiffusionWrapper:
                 self.__pipeline.safety_checker = None
 
     def __set_sampler(self, sampler):
+        print(self.__pipeline.pipeline.scheduler.compatibles)
         if sampler == 'PNDMScheduler':
             self.__pipeline.scheduler = PNDMScheduler.from_config(
                 self.__pipeline.scheduler.config, use_karras_sigmas=True
