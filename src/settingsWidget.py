@@ -2,10 +2,13 @@ import subprocess
 
 import os
 import torch
+from PyQt5.QtWidgets import QFrame, QLabel, QSpacerItem, QSizePolicy, QTableWidget, QHeaderView, QAbstractItemView
 from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QLineEdit, QMenu, QAction
 from qtpy.QtWidgets import QWidget, QFormLayout, QComboBox, QCheckBox, QGroupBox, QVBoxLayout, \
     QRadioButton, QHBoxLayout, QScrollArea, QPushButton, QFileDialog
+
+from src.twoColCmbBox import TwoColComboBox
 
 
 class FindPathLineEdit(QLineEdit):
@@ -96,7 +99,7 @@ class SettingsWidget(QScrollArea):
         # the other's default value, minimum, maximum value of each parameters loosely based on
         # https://platform.stability.ai/docs/features/api-parameters
 
-        # Save prompt configuration values
+        # Save configuration values
         if not self.__settings_ini.contains('save_path'):
             self.__settings_ini.setValue("save_path", os.path.expanduser('~'))
         if not self.__settings_ini.contains('torch_dtype'):
@@ -117,7 +120,10 @@ class SettingsWidget(QScrollArea):
         if not self.__settings_ini.contains('enable_model_cpu_offload'):
             self.__settings_ini.setValue("enable_model_cpu_offload", False)
 
-        # Read prompt configuration values
+        if not self.__settings_ini.contains('sampler'):
+            self.__settings_ini.setValue('sampler', 'DPMSolverMultistepScheduler')
+
+        # Read configuration values
         self.__save_path = self.__settings_ini.value('save_path', type=str)
         self.__torch_dtype = self.__settings_ini.value('torch_dtype', type=str)
         self.__safety_checker = self.__settings_ini.value("safety_checker", type=bool)
@@ -128,6 +134,8 @@ class SettingsWidget(QScrollArea):
         self.__enable_vae_tiling = self.__settings_ini.value('enable_vae_tiling', type=bool)
         self.__enable_sequential_cpu_offload = self.__settings_ini.value('enable_sequential_cpu_offload', type=bool)
         self.__enable_model_cpu_offload = self.__settings_ini.value('enable_model_cpu_offload', type=bool)
+
+        self.__sampler = self.__settings_ini.value('sampler', type=str)
 
     def __initUi(self):
         basicSettingsGrpBox = QGroupBox('General')
@@ -199,15 +207,78 @@ class SettingsWidget(QScrollArea):
 
         memoryAndSpeedGrpBox.setLayout(lay)
 
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFrameShadow(QFrame.Sunken)
+
+        self.__samplerCmbBox = TwoColComboBox(['PNDMScheduler',
+                ['DPMSolverMultistepScheduler', 'the GOAT'],
+                'DPMSolverSinglestepScheduler',
+                ['LMSDiscreteScheduler', 'usually leads to better results'],
+                'HeunDiscreteScheduler',
+                ['EulerDiscreteScheduler', 'generate high quality results with as little as 30 steps'],
+                ['EulerAncestralDiscreteScheduler', 'generate high quality results with as little as 30 steps']])
+        self.__samplerCmbBox.setCurrentText(self.__sampler)
+        self.__samplerCmbBox.currentTextChanged.connect(self.__samplerChanged)
+
+        lay = QFormLayout()
+        lay.addRow('Sampler', self.__samplerCmbBox)
+
+        samplerGrpBox = QGroupBox()
+        samplerGrpBox.setTitle('Sampler')
+        samplerGrpBox.setLayout(lay)
+
+        self.__addBtn = QPushButton('Add')
+        self.__delBtn = QPushButton('Delete')
+
+        self.__addBtn.clicked.connect(self.__addClicked)
+        self.__delBtn.clicked.connect(self.__deleteClicked)
+
+        lay = QHBoxLayout()
+
+        lay.addWidget(QLabel('Lora Table'))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addWidget(self.__addBtn)
+        lay.addWidget(self.__delBtn)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        loraMenuWidget = QWidget()
+        loraMenuWidget.setLayout(lay)
+
+        lora_table_header = ['Name', 'Description', 'Link']
+        self.__loraTable = QTableWidget()
+        self.__loraTable.setColumnCount(len(lora_table_header))
+        self.__loraTable.setHorizontalHeaderLabels(lora_table_header)
+        self.__loraTable.setRowCount(2)
+        self.__loraTable.resizeColumnsToContents()
+        self.__loraTable.verticalHeader().setVisible(False)
+        self.__loraTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.__loraTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        lay = QVBoxLayout()
+        lay.addWidget(loraMenuWidget)
+        lay.addWidget(self.__loraTable)
+
+        loraWidget = QWidget()
+        loraWidget.setLayout(lay)
+
         lay = QVBoxLayout()
         lay.addWidget(basicSettingsGrpBox)
         lay.addWidget(memoryAndSpeedGrpBox)
+        lay.addWidget(samplerGrpBox)
+        lay.addWidget(loraWidget)
 
         mainWidget = QWidget()
         mainWidget.setLayout(lay)
 
         self.setWidget(mainWidget)
         self.setWidgetResizable(True)
+
+    def __addClicked(self):
+        print('add')
+
+    def __deleteClicked(self):
+        print('delete')
 
     def __pathChanged(self, save_path):
         self.__settings_ini.setValue("save_path", save_path)
@@ -223,6 +294,10 @@ class SettingsWidget(QScrollArea):
 
     def getSavedPath(self):
         return self.__save_path
+
+    def __samplerChanged(self, sampler):
+        self.__settings_ini.setValue('sampler', sampler)
+        self.__sampler = sampler
 
     def getTorchDtype(self):
         if self.__torch_dtype == '16':

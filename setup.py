@@ -14,7 +14,7 @@ setup(
     author_email='yjg30737@gmail.com',
     license='MIT',
     packages=find_packages(),
-    package_data={'src': ['hf-logo.svg']},
+    package_data={'src': ['hf-logo.svg'], 'src.ico': ['close.svg', 'prompt.svg', 'setting.svg', 'sidebar.svg', 'table.svg']},
     description='PyQt Stable Diffusion GUI',
     url='https://github.com/yjg30737/pyqt-stable-diffusion-gui.git',
     long_description_content_type='text/markdown',

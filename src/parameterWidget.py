@@ -2,7 +2,6 @@ from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QMainWindow, QApplication, QLabel, QSpinBox, QTextEdit, QWidget, QVBoxLayout, \
     QDoubleSpinBox, QFormLayout, QFrame, QGroupBox, QPushButton, QCheckBox, QScrollArea
 
-
 class ParameterScrollArea(QScrollArea):
     def __init__(self):
         super(ParameterScrollArea, self).__init__()

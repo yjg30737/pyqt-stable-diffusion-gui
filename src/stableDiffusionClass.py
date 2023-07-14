@@ -1,7 +1,8 @@
 import gc
 import torch
 
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, DPMSolverSinglestepScheduler, \
+    EulerAncestralDiscreteScheduler, EulerDiscreteScheduler, HeunDiscreteScheduler, LMSDiscreteScheduler, PNDMScheduler
 from transformers import TRANSFORMERS_CACHE
 
 
@@ -31,7 +32,7 @@ class StableDiffusionWrapper:
         self.__enable_sequential_cpu_offload = False
         self.__enable_model_cpu_offload = False
 
-    def init_wrapper(self, model_id, cache_dir=TRANSFORMERS_CACHE, torch_dtype=torch.float16, is_safety_checker=True):
+    def init_wrapper(self, model_id, cache_dir=TRANSFORMERS_CACHE, torch_dtype=torch.float16, is_safety_checker=True, sampler='PNDMScheduler'):
         # clear cache to avoid OutOfMemoryError
         gc.collect()
         torch.cuda.empty_cache()
@@ -45,16 +46,41 @@ class StableDiffusionWrapper:
             self.__pipeline = StableDiffusionPipeline.from_pretrained(
                 self.__model_id, cache_dir=self.__cache_dir, torch_dtype=self.__torch_dtype).to(self.__device)
 
+            self.__set_sampler(sampler)
+
             if not self.__is_safety_checker:
                 self.__pipeline.safety_checker = None
 
+    def __set_sampler(self, sampler):
+        if sampler == 'PNDMScheduler':
+            self.__pipeline.scheduler = PNDMScheduler.from_config(
+                self.__pipeline.scheduler.config, use_karras_sigmas=True
+            )
+        elif sampler == 'DPMSolverMultistepScheduler':
             self.__pipeline.scheduler = DPMSolverMultistepScheduler.from_config(
                 self.__pipeline.scheduler.config, use_karras_sigmas=True
             )
+        elif sampler == 'DPMSolverSinglestepScheduler':
+            self.__pipeline.scheduler = DPMSolverSinglestepScheduler.from_config(
+                self.__pipeline.scheduler.config, use_karras_sigmas=True
+            )
+        elif sampler == 'LMSDiscreteScheduler':
+            self.__pipeline.scheduler = LMSDiscreteScheduler.from_config(
+                self.__pipeline.scheduler.config, use_karras_sigmas=True
+            )
+        elif sampler == 'HeunDiscreteScheduler':
+            self.__pipeline.scheduler = HeunDiscreteScheduler.from_config(
+                self.__pipeline.scheduler.config, use_karras_sigmas=True
+            )
+        elif sampler == 'EulerDiscreteScheduler':
+            self.__pipeline.scheduler = EulerDiscreteScheduler.from_config(
+                self.__pipeline.scheduler.config, use_karras_sigmas=True
+            )
+        elif sampler == 'EulerAncestralDiscreteScheduler':
+            self.__pipeline.scheduler = EulerAncestralDiscreteScheduler.from_config(
+                self.__pipeline.scheduler.config, use_karras_sigmas=True
+            )
 
-            # https://huggingface.co/docs/diffusers/optimization/fp16#tiled-vae-decode-and-encode-for-large-images
-            # fast speed, less memory, less accuracy
-            self.__pipeline.enable_vae_tiling()
 
     def set_saving_memory_attr(self, enable_xformers_memory_efficient_attention,
                                         enable_vae_slicing,
@@ -94,6 +120,9 @@ class StableDiffusionWrapper:
             self.__enable_model_cpu_offload = enable_model_cpu_offload
             if self.__enable_model_cpu_offload:
                 self.__pipeline.enable_model_cpu_offload()
+
+    def load_lora_weights(self, lora_path, weight_name):
+        self.__pipeline.load_lora_weights(lora_path, weight_name=weight_name)
 
     def get_pipeline(self):
         return self.__pipeline

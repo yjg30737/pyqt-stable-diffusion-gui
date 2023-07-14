@@ -218,6 +218,15 @@ class MainWindow(QMainWindow):
         self.__exitAction = QAction("Exit", self)
         self.__exitAction.triggered.connect(self.close)
 
+        self.__modelTableAction = QWidgetAction(self)
+        self.__modelTableBtn = SvgButton()
+        self.__modelTableBtn.setIcon('ico/table.svg')
+        self.__modelTableBtn.setToolTip('Model Table')
+        self.__modelTableBtn.setCheckable(True)
+        self.__modelTableBtn.setChecked(True)
+        self.__modelTableBtn.toggled.connect(self.__huggingFaceModelWidgetScrollAreaOuterWidget.setVisible)
+        self.__modelTableAction.setDefaultWidget(self.__modelTableBtn)
+
         self.__promptAction = QWidgetAction(self)
         self.__promptBtn = SvgButton()
         self.__promptBtn.setIcon('ico/prompt.svg')
@@ -247,6 +256,7 @@ class MainWindow(QMainWindow):
     def __setToolBar(self):
         toolbar = QToolBar()
         toolbar.layout().setSpacing(2)
+        toolbar.addAction(self.__modelTableAction)
         toolbar.addAction(self.__settingsAction)
         toolbar.addAction(self.__promptAction)
         toolbar.setMovable(False)
@@ -274,7 +284,9 @@ class MainWindow(QMainWindow):
         enable_sequential_cpu_offload = self.__settings_ini.value('enable_sequential_cpu_offload', type=bool)
         enable_model_cpu_offload = self.__settings_ini.value('enable_model_cpu_offload', type=bool)
 
-        self.__stable_diffusion_wrapper.init_wrapper(self.__current_model, cache_dir, torch_dtype, safety_checker)
+        sampler = self.__settings_ini.value('sampler', type=str)
+
+        self.__stable_diffusion_wrapper.init_wrapper(self.__current_model, cache_dir, torch_dtype, safety_checker, sampler)
 
         width = self.__settings_ini.value('width', type=int)
         height = self.__settings_ini.value('height', type=int)
