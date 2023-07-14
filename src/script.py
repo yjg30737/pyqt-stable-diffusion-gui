@@ -6,6 +6,7 @@ import sys
 
 import torch
 from PIL import Image
+from huggingface_hub import list_files_info
 
 
 def generate_random_prompt(arr):
@@ -77,3 +78,8 @@ def open_directory(path):
         os.system('xdg-open "{}"'.format(path))
     else:
         print("Unsupported operating system.")
+
+def get_info(lora_path):
+    return [info.rfilename for info in list_files_info(lora_path) if info.lfs is not None]
+
+print(get_info('datamonet/St_Louis_Luxurious_Wheels_Azur_Lane'))

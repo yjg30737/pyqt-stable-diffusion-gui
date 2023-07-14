@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt, QAbstractTableModel
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QApplication, QComboBox, QTableView, QHeaderView, QAbstractItemView, QStyledItemDelegate
+from qtpy.QtCore import Qt, QAbstractTableModel
+from qtpy.QtGui import QColor
+from qtpy.QtWidgets import QApplication, QComboBox, QTableView, QHeaderView, QAbstractItemView, QStyledItemDelegate
 
 
 class TwoColCmbBoxTableView(QTableView):

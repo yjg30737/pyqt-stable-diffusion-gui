@@ -2,12 +2,14 @@ import subprocess
 
 import os
 import torch
-from PyQt5.QtWidgets import QFrame, QLabel, QSpacerItem, QSizePolicy, QTableWidget, QHeaderView, QAbstractItemView
+from qtpy.QtWidgets import QFrame, QLabel, QSpacerItem, QSizePolicy, QTableWidget, QHeaderView, QAbstractItemView, \
+    QDialog, QMessageBox, QListWidget
 from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QLineEdit, QMenu, QAction
 from qtpy.QtWidgets import QWidget, QFormLayout, QComboBox, QCheckBox, QGroupBox, QVBoxLayout, \
     QRadioButton, QHBoxLayout, QScrollArea, QPushButton, QFileDialog
 
+from inputDialog import InputDialog
 from twoColCmbBox import TwoColComboBox
 
 
@@ -236,7 +238,7 @@ class SettingsWidget(QScrollArea):
 
         lay = QHBoxLayout()
 
-        lay.addWidget(QLabel('Lora Table'))
+        lay.addWidget(QLabel('Lora'))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -245,19 +247,11 @@ class SettingsWidget(QScrollArea):
         loraMenuWidget = QWidget()
         loraMenuWidget.setLayout(lay)
 
-        lora_table_header = ['Name', 'Description', 'Link']
-        self.__loraTable = QTableWidget()
-        self.__loraTable.setColumnCount(len(lora_table_header))
-        self.__loraTable.setHorizontalHeaderLabels(lora_table_header)
-        self.__loraTable.setRowCount(2)
-        self.__loraTable.resizeColumnsToContents()
-        self.__loraTable.verticalHeader().setVisible(False)
-        self.__loraTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.__loraTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.__loraList = QListWidget()
 
         lay = QVBoxLayout()
         lay.addWidget(loraMenuWidget)
-        lay.addWidget(self.__loraTable)
+        lay.addWidget(self.__loraList)
 
         loraWidget = QWidget()
         loraWidget.setLayout(lay)
@@ -275,10 +269,18 @@ class SettingsWidget(QScrollArea):
         self.setWidgetResizable(True)
 
     def __addClicked(self):
-        print('add')
+        dialog = InputDialog()
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            try:
+                lora_text = dialog.getText()
+                # add model in the table
+                self.__loraList.addItem(lora_text)
+            except Exception as e:
+                QMessageBox.critical(self, "Error", str(e))
 
     def __deleteClicked(self):
-        print('delete')
+        self.__loraList.takeItem(self.__loraList.currentRow())
 
     def __pathChanged(self, save_path):
         self.__settings_ini.setValue("save_path", save_path)
