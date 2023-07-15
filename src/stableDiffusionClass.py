@@ -1,5 +1,6 @@
 import gc
 import torch
+import torch.nn.functional as F
 
 from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, DPMSolverSinglestepScheduler, \
     EulerAncestralDiscreteScheduler, EulerDiscreteScheduler, HeunDiscreteScheduler, LMSDiscreteScheduler, PNDMScheduler
@@ -135,6 +136,38 @@ class StableDiffusionWrapper:
             self.__lora_path.append(lora_path)
             weight_name = get_info(lora_path)[0]
             self.__pipeline.load_lora_weights(lora_path, weight_name=weight_name)
+
+    def forward_embeddings_through_text_encoder(self, common_args):
+        max_length = self.__pipeline.tokenizer.model_max_length
+
+        input_ids = self.__pipeline.tokenizer(common_args['prompt'], return_tensors="pt").input_ids
+        input_ids = input_ids.to("cuda")
+
+        if input_ids.shape[1] > max_length:
+            negative_ids = self.__pipeline.tokenizer(common_args['negative_prompt'], truncation=False, padding="max_length",
+                                              max_length=input_ids.shape[-1], return_tensors="pt").input_ids
+            negative_ids = negative_ids.to("cuda")
+
+            concat_embeds = []
+            neg_embeds = []
+            for i in range(0, input_ids.shape[-1], max_length):
+                concat_embeds.append(self.__pipeline.text_encoder(input_ids[:, i: i + max_length])[0])
+                neg_embeds.append(self.__pipeline.text_encoder(negative_ids[:, i: i + max_length])[0])
+
+            prompt_embeds = torch.cat(concat_embeds, dim=1)
+            negative_prompt_embeds = torch.cat(neg_embeds, dim=1)
+
+            if prompt_embeds.shape[1] < negative_prompt_embeds.shape[1]:
+                padding = (0, 0, 0, negative_prompt_embeds.shape[1] - prompt_embeds.shape[1], 0, 0)
+                prompt_embeds = F.pad(prompt_embeds, padding)
+
+            del common_args['prompt']
+            del common_args['negative_prompt']
+
+            common_args['prompt_embeds'] = prompt_embeds
+            common_args['negative_prompt_embeds'] = negative_prompt_embeds
+
+        return common_args
 
     def get_pipeline(self):
         return self.__pipeline

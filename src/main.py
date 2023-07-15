@@ -323,11 +323,13 @@ class MainWindow(QMainWindow):
                 enable_model_cpu_offload
             )
 
+            pipeline_args = self.__stable_diffusion_wrapper.forward_embeddings_through_text_encoder(pipeline_args)
+
             pipeline = self.__stable_diffusion_wrapper.get_pipeline()
 
             generation_count = -1 if self.__is_infinite else self.__generation_count
 
-            self.__t = Thread(pipeline=pipeline, generation_count=generation_count, model_id=self.__current_model, save_path=save_path, rows=rows, cols=cols, **pipeline_args)
+            self.__t = Thread(pipeline=pipeline, generation_count=generation_count, model_id=self.__current_model, prompt_text_for_filename=prompt, save_path=save_path, rows=rows, cols=cols, **pipeline_args)
             self.__t.started.connect(self.__started)
             self.__t.finished.connect(self.__t.deleteLater)
             self.__t.generateFinished.connect(self.__generateFinished)
