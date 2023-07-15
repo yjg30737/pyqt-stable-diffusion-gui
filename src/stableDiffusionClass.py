@@ -5,6 +5,8 @@ from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, DPMS
     EulerAncestralDiscreteScheduler, EulerDiscreteScheduler, HeunDiscreteScheduler, LMSDiscreteScheduler, PNDMScheduler
 from transformers import TRANSFORMERS_CACHE
 
+from script import get_info
+
 
 class StableDiffusionWrapper:
     def __init__(self):
@@ -31,6 +33,8 @@ class StableDiffusionWrapper:
         self.__enable_vae_tiling = False
         self.__enable_sequential_cpu_offload = False
         self.__enable_model_cpu_offload = False
+
+        self.__lora_path = []
 
     def init_wrapper(self, model_id, cache_dir=TRANSFORMERS_CACHE, torch_dtype=torch.float16, is_safety_checker=True, sampler='PNDMScheduler'):
         # clear cache to avoid OutOfMemoryError
@@ -124,8 +128,13 @@ class StableDiffusionWrapper:
             if self.__enable_model_cpu_offload:
                 self.__pipeline.enable_model_cpu_offload()
 
-    def load_lora_weights(self, lora_path, weight_name):
-        self.__pipeline.load_lora_weights(lora_path, weight_name=weight_name)
+    def load_lora_weights(self, lora_path):
+        if lora_path in self.__lora_path:
+            pass
+        else:
+            self.__lora_path.append(lora_path)
+            weight_name = get_info(lora_path)[0]
+            self.__pipeline.load_lora_weights(lora_path, weight_name=weight_name)
 
     def get_pipeline(self):
         return self.__pipeline

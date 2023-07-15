@@ -338,3 +338,10 @@ class SettingsWidget(QScrollArea):
     def __enable_model_cpu_offloadChkBoxChanged(self, f):
         self.__settings_ini.setValue('enable_model_cpu_offload', f)
         self.__enable_model_cpu_offload = f
+
+    def getLoraPaths(self):
+        file_lst = [self.__loraList.item(i).text() for i in range(self.__loraList.count())]
+        if len(file_lst) > 0:
+            return file_lst
+        else:
+            return ''

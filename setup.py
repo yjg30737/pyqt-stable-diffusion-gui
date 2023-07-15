@@ -28,6 +28,7 @@ setup(
         'pillow',
         'transformers',
         'accelerate>=0.17.0',
-        'huggingface_hub'
+        'huggingface_hub',
+        'safetensors'
     ]
 )

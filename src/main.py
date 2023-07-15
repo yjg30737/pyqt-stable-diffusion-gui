@@ -272,62 +272,70 @@ class MainWindow(QMainWindow):
         self.__settings_ini.setValue('is_infinite', self.__is_infinite)
 
     def __generate(self):
-        # get parameters which are necessary to initialize the pipeline
-        cache_dir = self.__settings_ini.value('CACHE_DIR')
-        torch_dtype = self.__settingsWidget.getTorchDtype()
-        safety_checker = self.__settingsWidget.getSafetyChecked()
+        try:
+            # get parameters which are necessary to initialize the pipeline
+            cache_dir = self.__settings_ini.value('CACHE_DIR')
+            torch_dtype = self.__settingsWidget.getTorchDtype()
+            safety_checker = self.__settingsWidget.getSafetyChecked()
 
-        enable_xformers_memory_efficient_attention = self.__settings_ini.value('enable_xformers_memory_efficient_attention', type=bool)
-        enable_vae_slicing = self.__settings_ini.value('enable_vae_slicing', type=bool)
-        enable_attention_slicing = self.__settings_ini.value('enable_attention_slicing', type=bool)
-        enable_vae_tiling = self.__settings_ini.value('enable_vae_tiling', type=bool)
-        enable_sequential_cpu_offload = self.__settings_ini.value('enable_sequential_cpu_offload', type=bool)
-        enable_model_cpu_offload = self.__settings_ini.value('enable_model_cpu_offload', type=bool)
+            enable_xformers_memory_efficient_attention = self.__settings_ini.value('enable_xformers_memory_efficient_attention', type=bool)
+            enable_vae_slicing = self.__settings_ini.value('enable_vae_slicing', type=bool)
+            enable_attention_slicing = self.__settings_ini.value('enable_attention_slicing', type=bool)
+            enable_vae_tiling = self.__settings_ini.value('enable_vae_tiling', type=bool)
+            enable_sequential_cpu_offload = self.__settings_ini.value('enable_sequential_cpu_offload', type=bool)
+            enable_model_cpu_offload = self.__settings_ini.value('enable_model_cpu_offload', type=bool)
 
-        sampler = self.__settings_ini.value('sampler', type=str)
+            sampler = self.__settings_ini.value('sampler', type=str)
 
-        self.__stable_diffusion_wrapper.init_wrapper(self.__current_model, cache_dir, torch_dtype, safety_checker, sampler)
+            self.__stable_diffusion_wrapper.init_wrapper(self.__current_model, cache_dir, torch_dtype, safety_checker, sampler)
 
-        width = self.__settings_ini.value('width', type=int)
-        height = self.__settings_ini.value('height', type=int)
-        prompt = self.__settings_ini.value('prompt', type=str)
-        negative_prompt = self.__settings_ini.value('negative_prompt', type=str)
-        num_inference_steps = self.__settings_ini.value('num_inference_steps', type=int)
-        guidance_scale = self.__settings_ini.value('guidance_scale', type=float)
-        rows = self.__settings_ini.value('rows', type=int)
-        cols = self.__settings_ini.value('cols', type=int)
+            lora_paths = self.__settingsWidget.getLoraPaths()
+            for lora_path in lora_paths:
+                self.__stable_diffusion_wrapper.load_lora_weights(lora_path)
 
-        pipeline_args = {
-            'width': width,
-            'height': height,
-            'prompt': prompt,
-            'negative_prompt': negative_prompt,
-            'num_inference_steps': num_inference_steps,
-            'guidance_scale': guidance_scale,
-            'num_images_per_prompt': rows*cols
-        }
+            width = self.__settings_ini.value('width', type=int)
+            height = self.__settings_ini.value('height', type=int)
+            prompt = self.__settings_ini.value('prompt', type=str)
+            negative_prompt = self.__settings_ini.value('negative_prompt', type=str)
+            num_inference_steps = self.__settings_ini.value('num_inference_steps', type=int)
+            guidance_scale = self.__settings_ini.value('guidance_scale', type=float)
+            rows = self.__settings_ini.value('rows', type=int)
+            cols = self.__settings_ini.value('cols', type=int)
 
-        save_path = self.__settingsWidget.getSavedPath()
+            pipeline_args = {
+                'width': width,
+                'height': height,
+                'prompt': prompt,
+                'negative_prompt': negative_prompt,
+                'num_inference_steps': num_inference_steps,
+                'guidance_scale': guidance_scale,
+                'num_images_per_prompt': rows*cols
+            }
 
-        self.__stable_diffusion_wrapper.set_saving_memory_attr(
-            enable_xformers_memory_efficient_attention,
-            enable_vae_slicing,
-            enable_attention_slicing,
-            enable_vae_tiling,
-            enable_sequential_cpu_offload,
-            enable_model_cpu_offload
-        )
+            save_path = self.__settingsWidget.getSavedPath()
 
-        pipeline = self.__stable_diffusion_wrapper.get_pipeline()
+            self.__stable_diffusion_wrapper.set_saving_memory_attr(
+                enable_xformers_memory_efficient_attention,
+                enable_vae_slicing,
+                enable_attention_slicing,
+                enable_vae_tiling,
+                enable_sequential_cpu_offload,
+                enable_model_cpu_offload
+            )
 
-        generation_count = -1 if self.__is_infinite else self.__generation_count
+            pipeline = self.__stable_diffusion_wrapper.get_pipeline()
 
-        self.__t = Thread(pipeline=pipeline, generation_count=generation_count, model_id=self.__current_model, save_path=save_path, rows=rows, cols=cols, **pipeline_args)
-        self.__t.started.connect(self.__started)
-        self.__t.finished.connect(self.__t.deleteLater)
-        self.__t.generateFinished.connect(self.__generateFinished)
-        self.__t.generateFailed.connect(self.__generateFailed)
-        self.__t.start()
+            generation_count = -1 if self.__is_infinite else self.__generation_count
+
+            self.__t = Thread(pipeline=pipeline, generation_count=generation_count, model_id=self.__current_model, save_path=save_path, rows=rows, cols=cols, **pipeline_args)
+            self.__t.started.connect(self.__started)
+            self.__t.finished.connect(self.__t.deleteLater)
+            self.__t.generateFinished.connect(self.__generateFinished)
+            self.__t.generateFailed.connect(self.__generateFailed)
+            self.__t.start()
+        except Exception as e:
+            print(e)
+            QMessageBox.critical(self, "Error", str(e))
 
     def __toggleWidgetByRunning(self, f: bool):
         self.__huggingFaceModelWidgetScrollAreaOuterWidget.setEnabled(f)
