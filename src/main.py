@@ -340,9 +340,9 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", str(e))
 
     def __toggleWidgetByRunning(self, f: bool):
-        self.__huggingFaceModelWidgetScrollAreaOuterWidget.setEnabled(f)
-        self.__settingsOuterWidget.setEnabled(f)
-        self.__promptScrollAreaWidget.setEnabled(f)
+        self.__huggingFaceModelWidget.setEnabled(f)
+        self.__settingsWidget.setEnabled(f)
+        self.__paramScrollArea.setEnabled(f)
         self.__generateWidget.setEnabled(f)
 
     def __started(self):

@@ -1,8 +1,8 @@
 from qtpy.QtCore import QThread, Signal, Qt
-from qtpy.QtWidgets import QWidget, QLineEdit, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QMessageBox, QFormLayout, \
-    QComboBox
+from qtpy.QtWidgets import QWidget, QLineEdit, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QMessageBox, QFormLayout
 
 from .huggingFaceModelClass import HuggingFaceModelClass
+from src.disableWheelComboBox import DisableWheelComboBox
 
 
 class InstallModelThread(QThread):
@@ -52,7 +52,7 @@ class HuggingFaceModelInstallWidget(QWidget):
         modelInputWidget = QWidget()
         modelInputWidget.setLayout(lay)
 
-        self.__modelTypeCmbBox = QComboBox()
+        self.__modelTypeCmbBox = DisableWheelComboBox()
         self.__modelTypeCmbBox.addItems(['General', 'Stable Diffusion'])
 
         lay = QFormLayout()

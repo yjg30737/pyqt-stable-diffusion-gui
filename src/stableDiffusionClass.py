@@ -1,4 +1,6 @@
 import gc
+import os.path
+
 import torch
 import torch.nn.functional as F
 
@@ -27,6 +29,7 @@ class StableDiffusionWrapper:
         self.__is_safety_checker = True
 
         self.__pipeline = None
+        self.__sampler = None
 
         self.__enable_xformers_memory_efficient_attention = False
         self.__enable_vae_slicing = False
@@ -43,6 +46,7 @@ class StableDiffusionWrapper:
         torch.cuda.empty_cache()
 
         if self.__model_id != model_id or self.__cache_dir != cache_dir or self.__torch_dtype != torch_dtype or self.__is_safety_checker != is_safety_checker:
+            print('StableDiffusionPipeline init')
             self.__model_id = model_id if self.__model_id != model_id else model_id
             self.__cache_dir = cache_dir if self.__cache_dir != cache_dir else cache_dir
             self.__torch_dtype = torch_dtype if self.__torch_dtype != torch_dtype else torch_dtype
@@ -51,14 +55,15 @@ class StableDiffusionWrapper:
             self.__pipeline = StableDiffusionPipeline.from_pretrained(
                 self.__model_id, cache_dir=self.__cache_dir, torch_dtype=self.__torch_dtype).to(self.__device)
 
-            self.__set_sampler(sampler)
-
             if not self.__is_safety_checker:
                 self.__pipeline.safety_checker = None
 
+        if self.__pipeline and self.__sampler != sampler:
+            self.__set_sampler(sampler)
+
     def __set_sampler(self, sampler):
-        for compatible in self.__pipeline.scheduler.compatibles:
-            print(compatible)
+        for i, v in enumerate(self.__pipeline.scheduler.compatibles):
+            print(i, v.__name__)
 
         if sampler == 'PNDMScheduler':
             self.__pipeline.scheduler = PNDMScheduler.from_config(
@@ -88,7 +93,9 @@ class StableDiffusionWrapper:
             self.__pipeline.scheduler = EulerAncestralDiscreteScheduler.from_config(
                 self.__pipeline.scheduler.config, use_karras_sigmas=True
             )
+        print('current scheduler:', self.__pipeline.scheduler)
 
+        self.__sampler = sampler
 
     def set_saving_memory_attr(self, enable_xformers_memory_efficient_attention,
                                         enable_vae_slicing,
@@ -131,11 +138,13 @@ class StableDiffusionWrapper:
 
     def load_lora_weights(self, lora_path):
         if lora_path in self.__lora_path:
+            print('LoRA already exists:', self.__lora_path)
             pass
         else:
             self.__lora_path.append(lora_path)
             weight_name = get_info(lora_path)[0]
-            self.__pipeline.load_lora_weights(lora_path, weight_name=weight_name)
+            self.__pipeline.load_lora_weights(lora_path, cache_dir=self.__cache_dir, weight_name=weight_name)
+            print('LoRA saved:', self.__lora_path)
 
     def forward_embeddings_through_text_encoder(self, common_args):
         max_length = self.__pipeline.tokenizer.model_max_length
@@ -166,6 +175,9 @@ class StableDiffusionWrapper:
 
             common_args['prompt_embeds'] = prompt_embeds
             common_args['negative_prompt_embeds'] = negative_prompt_embeds
+
+            print('prompt_embeds:', prompt_embeds)
+            print('negative_prompt_embeds:', negative_prompt_embeds)
 
         return common_args
 

@@ -6,11 +6,12 @@ from qtpy.QtWidgets import QFrame, QLabel, QSpacerItem, QSizePolicy, QTableWidge
     QDialog, QMessageBox, QListWidget
 from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QLineEdit, QMenu, QAction
-from qtpy.QtWidgets import QWidget, QFormLayout, QComboBox, QCheckBox, QGroupBox, QVBoxLayout, \
+from qtpy.QtWidgets import QWidget, QFormLayout, QCheckBox, QGroupBox, QVBoxLayout, \
     QRadioButton, QHBoxLayout, QScrollArea, QPushButton, QFileDialog
 
 from inputDialog import InputDialog
 from twoColCmbBox import TwoColComboBox
+from disableWheelComboBox import DisableWheelComboBox
 
 
 class FindPathLineEdit(QLineEdit):
@@ -107,7 +108,7 @@ class SettingsWidget(QScrollArea):
         if not self.__settings_ini.contains('torch_dtype'):
             self.__settings_ini.setValue("torch_dtype", 16)
         if not self.__settings_ini.contains('safety_checker'):
-            self.__settings_ini.setValue("safety_checker", True)
+            self.__settings_ini.setValue("safety_checker", False)
 
         if not self.__settings_ini.contains('enable_xformers_memory_efficient_attention'):
             self.__settings_ini.setValue("enable_xformers_memory_efficient_attention", False)
@@ -145,7 +146,7 @@ class SettingsWidget(QScrollArea):
         findPathLineEdit = FindPathWidget(self.__save_path)
         findPathLineEdit.added.connect(self.__pathChanged)
 
-        torchDtypeCmbBox = QComboBox()
+        torchDtypeCmbBox = DisableWheelComboBox()
         torchDtypeCmbBox.addItems(['16', '32'])
         torchDtypeCmbBox.setCurrentText(self.__torch_dtype)
         torchDtypeCmbBox.currentTextChanged.connect(self.__dtypeChanged)

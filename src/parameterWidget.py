@@ -30,7 +30,7 @@ class ParameterScrollArea(QScrollArea):
         if not self.__settings_ini.contains('original_height'):
             self.__settings_ini.setValue("original_height", 512)
         if not self.__settings_ini.contains('original_num_inference_steps'):
-            self.__settings_ini.setValue("original_num_inference_steps", 30)
+            self.__settings_ini.setValue("original_num_inference_steps", 20)
         if not self.__settings_ini.contains('original_guidance_scale'):
             self. __settings_ini.setValue("original_guidance_scale", 7.5)
         if not self.__settings_ini.contains('original_rows'):
@@ -85,12 +85,14 @@ class ParameterScrollArea(QScrollArea):
         self.__promptTextEdit.setPlaceholderText(self.__original_prompt)
         self.__promptTextEdit.setPlainText(self.__prompt)
         self.__promptTextEdit.textChanged.connect(self.__onPromptChanged)
+        self.__promptTextEdit.setAcceptRichText(False)
 
         self.__negativePromptLbl = QLabel("Negative Prompt:")
         self.__negativePromptTextEdit = QTextEdit()
         self.__negativePromptTextEdit.setPlaceholderText(self.__original_negative_prompt)
         self.__negativePromptTextEdit.setPlainText(self.__negative_prompt)
         self.__negativePromptTextEdit.textChanged.connect(self.__onNegativePromptChanged)
+        self.__negativePromptTextEdit.setAcceptRichText(False)
 
         randomPromptCheckBox = QCheckBox('Insert random text each time an image is generated at the end of the prompt (Not Available now)')
         randomPromptCheckBox.setDisabled(True)
@@ -119,7 +121,7 @@ class ParameterScrollArea(QScrollArea):
         self.__heightSpinBox.valueChanged.connect(self.__heightSpinBoxValueChanged)
 
         self.__inferenceStepsSpinBox = QSpinBox()
-        self.__inferenceStepsSpinBox.setRange(30, 50)
+        self.__inferenceStepsSpinBox.setRange(20, 50)
         self.__inferenceStepsSpinBox.setValue(self.__num_inference_steps)
         self.__inferenceStepsSpinBox.valueChanged.connect(self.__inferenceStepsSpinBoxValueChanged)
 

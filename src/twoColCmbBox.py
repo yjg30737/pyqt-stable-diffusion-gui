@@ -1,6 +1,8 @@
 from qtpy.QtCore import Qt, QAbstractTableModel
 from qtpy.QtGui import QColor
-from qtpy.QtWidgets import QApplication, QComboBox, QTableView, QHeaderView, QAbstractItemView, QStyledItemDelegate
+from qtpy.QtWidgets import QTableView, QHeaderView, QAbstractItemView, QStyledItemDelegate
+
+from disableWheelComboBox import DisableWheelComboBox
 
 
 class TwoColCmbBoxTableView(QTableView):
@@ -42,7 +44,7 @@ class TwoColStyleDelegate(QStyledItemDelegate):
             option.palette.setColor(option.palette.Text, QColor('#888888'))  # Set your desired color here
 
 
-class TwoColComboBox(QComboBox):
+class TwoColComboBox(DisableWheelComboBox):
     def __init__(self, data):
         super().__init__()
         self.setModel(TwoColTableModel(data))
