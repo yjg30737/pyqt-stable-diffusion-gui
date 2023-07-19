@@ -20,26 +20,11 @@ And if you want to give me any feedback or have trouble to install this send me 
 * Supporting LoRA
 * No prompt/negative prompt token limit
 
-## Requirements
-### PyQt, PySide related 
-* PyQt5>=5.14
-* PySide6
-* qtpy
-### Stable Diffusion & HuggingFace related
-* diffusers>=0.17.1
-* torch
-* pillow
-* transformers
-* accelerate>=0.17.0
-* huggingface_hub
-* safetensors
-
 ## How to Use
-1. install cuda
-2. install torch from <a href="https://pytorch.org/get-started/locally">here</a>
-3. git clone ~
-4. pip install -r requirements.txt
-5. python main.py
+1. install CUDA 11.8 (if you have CUDA already, don't mind about it)
+2. git clone ~
+3. execute install.bat
+4. python main.py
  
 ## Preview
 ### GUI
