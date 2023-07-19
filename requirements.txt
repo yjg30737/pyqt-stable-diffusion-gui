@@ -1,10 +1,9 @@
 PyQt5>=5.14
 PySide6
 qtpy
-diffusers>=0.17.1
-torch
+diffusers
 pillow
 transformers
-accelerate>=0.17.0
+accelerate
 huggingface_hub
 safetensors
