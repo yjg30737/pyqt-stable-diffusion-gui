@@ -4,6 +4,7 @@ import os
 from huggingface_hub import scan_cache_dir, RepoCard
 from transformers import AutoConfig, TRANSFORMERS_CACHE
 
+from diffusers import StableDiffusionPipeline
 
 def format_size(num: int) -> str:
     """Format size in bytes into a human-readable string.
@@ -65,16 +66,13 @@ class HuggingFaceModelClass:
             certain_models_size = sum(list(map(lambda x: x['size_on_disk'], self.getModels(certain_models))))
             return format_size(certain_models_size)
 
-    def installHuggingFaceModel(self, model_name, model_type='General'):
+    def installHuggingFaceModel(self, name, model_type='General'):
         try:
-            if model_type == 'General':
-                model_class = self.__retrieveModelClassByNameDynamically(model_name)
-                model_class.from_pretrained(model_name, cache_dir=self.__cache_dir)
-            elif model_type == 'Stable Diffusion':
-                from diffusers import StableDiffusionPipeline
-
-                StableDiffusionPipeline.from_pretrained(model_name, cache_dir=self.__cache_dir)
-            return [obj for obj in self.getModels() if obj['id'] == model_name]
+            if model_type == 'Model':
+                StableDiffusionPipeline.from_pretrained(name, cache_dir=self.__cache_dir)
+            elif model_type == 'Checkpoint':
+                StableDiffusionPipeline.from_ckpt(name, cache_dir=self.__cache_dir)
+            return [obj for obj in self.getModels() if obj['id'] == name]
         except Exception as e:
             raise Exception(e)
 
