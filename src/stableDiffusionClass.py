@@ -46,7 +46,6 @@ class StableDiffusionWrapper:
         torch.cuda.empty_cache()
 
         if self.__model_id != model_id or self.__cache_dir != cache_dir or self.__torch_dtype != torch_dtype or self.__is_safety_checker != is_safety_checker:
-            print('StableDiffusionPipeline init')
             self.__model_id = model_id if self.__model_id != model_id else model_id
             self.__cache_dir = cache_dir if self.__cache_dir != cache_dir else cache_dir
             self.__torch_dtype = torch_dtype if self.__torch_dtype != torch_dtype else torch_dtype

@@ -38,25 +38,21 @@ class HuggingFaceModelClass:
         self.__text_2_image_only = f
 
     def getModels(self, certain_models=None):
-        models = [{"id": i.repo_id,
-                   "is_t2i": True if 'text-to-image' in
-                                      RepoCard.load(i.repo_id).data.get('tags', []) else False, }
+        models = [{"id": i.repo_id}
                     for i in scan_cache_dir(cache_dir=self.__cache_dir).repos]
-        if self.__text_2_image_only:
-            models = [model for model in models if model['is_t2i']]
         if certain_models is None:
             return models
         else:
             return list(filter(lambda x: x['id'] in certain_models, models)) if len(
                 certain_models) > 0 else certain_models
 
-    def installHuggingFaceModel(self, name, model_type='General'):
+    def installHuggingFaceModel(self, name, model_type='Model'):
         try:
             if model_type == 'Model':
                 StableDiffusionPipeline.from_pretrained(name, cache_dir=self.__cache_dir)
             elif model_type == 'Checkpoint':
-                StableDiffusionPipeline.from_ckpt(name, cache_dir=self.__cache_dir)
-            return [obj for obj in self.getModels() if obj['id'] == name]
+                StableDiffusionPipeline.from_single_file(name, cache_dir=self.__cache_dir)
+            return self.getModels()
         except Exception as e:
             raise Exception(e)
 

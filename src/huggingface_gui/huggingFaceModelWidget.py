@@ -48,7 +48,6 @@ class HuggingFaceModelWidget(QWidget):
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(QLabel('Cache Directory'))
         lay.addWidget(self.__findPathWidget)
-        lay.addWidget(self.__resetBtn)
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
         lay.setContentsMargins(0, 0, 0, 0)

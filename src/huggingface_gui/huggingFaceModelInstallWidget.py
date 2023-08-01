@@ -20,7 +20,9 @@ class InstallModelThread(QThread):
             if self.__model_name_to_install in [model['id'] for model in self.__hf_class.getModels()]:
                 raise Exception('Model already exists.')
             else:
-                self.installFinished.emit(self.__hf_class.installHuggingFaceModel(self.__model_name_to_install, self.__model_type)[0])
+                result = self.__hf_class.installHuggingFaceModel(self.__model_name_to_install, self.__model_type)
+                print('thread result: ', result)
+                self.installFinished.emit(result[0])
         except Exception as e:
             self.installFailed.emit(str(e))
 
@@ -53,7 +55,7 @@ class HuggingFaceModelInstallWidget(QWidget):
         modelInputWidget.setLayout(lay)
 
         self.__modelTypeCmbBox = DisableWheelComboBox()
-        self.__modelTypeCmbBox.addItems(['General', 'Stable Diffusion'])
+        self.__modelTypeCmbBox.addItems(['Model', 'Checkpoint'])
 
         lay = QFormLayout()
         lay.addRow('Type', self.__modelTypeCmbBox)
@@ -104,6 +106,7 @@ class HuggingFaceModelInstallWidget(QWidget):
         self.__installBtn.setEnabled(True)
 
     def __installFinished(self, model: dict):
+        print('__installFinished model: ', model)
         self.onInstalled.emit(model)
 
     def __installFailed(self, err_msg):
