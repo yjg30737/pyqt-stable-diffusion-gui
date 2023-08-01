@@ -24,7 +24,7 @@ class StableDiffusionWrapper:
             torch.backends.cuda.matmul.allow_tf32 = True
 
         self.__model_id = None
-        self.__cache_dir = TRANSFORMERS_CACHE
+        self.__cache_dir = 'models'
         self.__torch_dtype = torch.float16
         self.__is_safety_checker = True
 
@@ -40,7 +40,7 @@ class StableDiffusionWrapper:
 
         self.__lora_path = []
 
-    def init_wrapper(self, model_id, cache_dir=TRANSFORMERS_CACHE, torch_dtype=torch.float16, is_safety_checker=True, sampler='PNDMScheduler'):
+    def init_wrapper(self, model_id, cache_dir='models', torch_dtype=torch.float16, is_safety_checker=True, sampler='PNDMScheduler'):
         # clear cache to avoid OutOfMemoryError
         gc.collect()
         torch.cuda.empty_cache()

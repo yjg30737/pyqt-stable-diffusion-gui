@@ -3,7 +3,7 @@ import sys
 
 from .huggingFacePathWidget import FindPathWidget
 
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QWidget, QApplication, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QPushButton, QDialog, QMessageBox
@@ -61,6 +61,7 @@ class HuggingFaceModelWidget(QWidget):
         menuWidget.setLayout(lay)
 
         self.__hf_class = HuggingFaceModelClass()
+        self.__hf_class.setCacheDir(self.__cache_dir)
         self.__hf_class.setText2ImageOnly(True)
 
         self.__modelTableWidget = HuggingFaceModelTableWidget()
@@ -117,6 +118,9 @@ class HuggingFaceModelWidget(QWidget):
         self.__findPathWidget.resetCacheDir()
 
     def setCacheDir(self, cache_dir):
+        # make directory tree if it is not existed
+        os.makedirs(cache_dir, exist_ok=True)
+
         self.__cache_dir = cache_dir
         self.__modelTableWidget.clearContents()
         self.__modelTableWidget.setRowCount(0)

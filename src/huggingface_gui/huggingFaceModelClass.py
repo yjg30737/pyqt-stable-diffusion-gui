@@ -1,4 +1,5 @@
 import importlib
+import os
 
 from huggingface_hub import scan_cache_dir, RepoCard
 from transformers import AutoConfig, TRANSFORMERS_CACHE

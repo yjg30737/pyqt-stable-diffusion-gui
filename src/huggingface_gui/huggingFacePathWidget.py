@@ -64,7 +64,7 @@ class FindPathWidget(QWidget):
             pass
         # set the cache_dir if ini file is initially made
         else:
-            self.__settings_struct.setValue('CACHE_DIR', os.path.normpath(TRANSFORMERS_CACHE))
+            self.__settings_struct.setValue('CACHE_DIR', os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models'))
         self.onCacheDirSet.emit(self.__settings_struct.value('CACHE_DIR'))
 
     def __initUi(self):
@@ -94,7 +94,7 @@ class FindPathWidget(QWidget):
             self.__handleSettingCacheDir()
 
     def resetCacheDir(self):
-        self.__cache_dir = TRANSFORMERS_CACHE
+        self.__cache_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
         self.__handleSettingCacheDir()
 
     def __handleSettingCacheDir(self):
