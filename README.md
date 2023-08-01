@@ -21,9 +21,9 @@ And if you want to give me any feedback or have trouble to install this send me 
 * No prompt/negative prompt token limit
 
 ## How to Use
-1. install CUDA 11.8 (if you have CUDA already, don't mind about it)
+1. install CUDA 11.8 (if you have CUDA at any version already, don't mind about it)
 2. git clone ~
-3. execute install.bat
+3. run install.bat/install.sh
 4. python main.py
  
 ## Preview
