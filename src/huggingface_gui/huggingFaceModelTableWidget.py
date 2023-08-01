@@ -12,7 +12,7 @@ class HuggingFaceModelTableWidget(QTableWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__header_labels = {v: i for (i, v) in enumerate(['Name', 'Size', 'Text2Image?', 'Visit'])}
+        self.__header_labels = {v: i for (i, v) in enumerate(['Name', 'Visit'])}
 
     def __initUi(self):
         self.setHorizontalHeaderLabels(self.__header_labels.keys())
@@ -44,20 +44,6 @@ class HuggingFaceModelTableWidget(QTableWidget):
                 model_id_item = QTableWidgetItem(model_id)
                 model_id_item.setTextAlignment(Qt.AlignCenter)
                 self.setItem(cur_table_idx, self.__header_labels['Name'], model_id_item)
-
-            # size on disk
-            if self.__header_labels.get('Size', '') != '':
-                size_on_disk_str = model['size_on_disk_str']
-                size_on_disk_str_item = QTableWidgetItem(size_on_disk_str)
-                size_on_disk_str_item.setTextAlignment(Qt.AlignCenter)
-                self.setItem(cur_table_idx, self.__header_labels['Size'], size_on_disk_str_item)
-
-            # is text2image or something else
-            if self.__header_labels.get('Text2Image?', '') != '':
-                is_t2i = 'Yes' if model['is_t2i'] else 'No'
-                is_t2i_item = QTableWidgetItem(is_t2i)
-                is_t2i_item.setTextAlignment(Qt.AlignCenter)
-                self.setItem(cur_table_idx, self.__header_labels['Text2Image?'], is_t2i_item)
 
             # visit
             if self.__header_labels.get('Visit', '') != '':

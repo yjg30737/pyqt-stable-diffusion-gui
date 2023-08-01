@@ -35,15 +35,10 @@ class HuggingFaceModelClass:
         self.__cache_dir = cache_dir
 
     def setText2ImageOnly(self, f: bool):
-        """
-        this is only applied in "getModels" and "getModelsSize"
-        :param f:
-        :return:
-        """
         self.__text_2_image_only = f
 
     def getModels(self, certain_models=None):
-        models = [{"id": i.repo_id, "size_on_disk": i.size_on_disk, "size_on_disk_str": i.size_on_disk_str,
+        models = [{"id": i.repo_id,
                    "is_t2i": True if 'text-to-image' in
                                       RepoCard.load(i.repo_id).data.get('tags', []) else False, }
                     for i in scan_cache_dir(cache_dir=self.__cache_dir).repos]
@@ -54,17 +49,6 @@ class HuggingFaceModelClass:
         else:
             return list(filter(lambda x: x['id'] in certain_models, models)) if len(
                 certain_models) > 0 else certain_models
-
-    def getModelsSize(self, certain_models=None):
-        models_size = scan_cache_dir(cache_dir=self.__cache_dir).size_on_disk_str
-        if self.__text_2_image_only:
-            text_2_image_only_size = sum(list(map(lambda x: x['size_on_disk'], filter(lambda x: x['is_t2i'], self.getModels(certain_models)))))
-            return format_size(text_2_image_only_size)
-        if certain_models is None:
-            return models_size
-        else:
-            certain_models_size = sum(list(map(lambda x: x['size_on_disk'], self.getModels(certain_models))))
-            return format_size(certain_models_size)
 
     def installHuggingFaceModel(self, name, model_type='General'):
         try:

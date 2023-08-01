@@ -28,7 +28,6 @@ class HuggingFaceModelWidget(QWidget):
 
     def __initVal(self, certain_models):
         self.__certain_models = certain_models
-        self.__total_size_prefix = 'Total:'
 
     def __initUi(self):
         self.setWindowTitle('HuggingFace Model Table')
@@ -36,9 +35,6 @@ class HuggingFaceModelWidget(QWidget):
         self.__findPathWidget = FindPathWidget()
         self.__cache_dir = self.__findPathWidget.getCacheDirectory()
         self.__findPathWidget.onCacheDirSet.connect(self.setCacheDir)
-
-        self.__resetBtn = QPushButton('Reset Cache Directory')
-        self.__resetBtn.clicked.connect(self.__resetCacheDir)
 
         self.__addBtn = QPushButton('Add')
         self.__delBtn = QPushButton('Delete')
@@ -65,7 +61,7 @@ class HuggingFaceModelWidget(QWidget):
         self.__hf_class.setText2ImageOnly(True)
 
         self.__modelTableWidget = HuggingFaceModelTableWidget()
-        self.__modelTableWidget.setHorizontalHeaderLabels(['Name', 'Size', 'Visit'])
+        self.__modelTableWidget.setHorizontalHeaderLabels(['Name', 'Visit'])
         self.__modelTableWidget.currentCellChanged.connect(self.__currentCellChanged)
 
         self.__totalSizeLbl = QLabel()
@@ -90,7 +86,6 @@ class HuggingFaceModelWidget(QWidget):
                 model = dialog.getModel()
                 # add model in the table
                 self.__modelTableWidget.addModels([model])
-                self.__totalSizeLbl.setText(f'{self.__total_size_prefix} {self.__hf_class.getModelsSize(self.__certain_models)}')
                 self.onModelAdded.emit(model['id'])
             except Exception as e:
                 QMessageBox.critical(self, "Error", str(e))
@@ -100,7 +95,6 @@ class HuggingFaceModelWidget(QWidget):
         self.__hf_class.removeHuggingFaceModel(model_name)
         cur_row = self.__modelTableWidget.currentRow()
         self.__modelTableWidget.removeRow(cur_row)
-        self.__totalSizeLbl.setText(f'{self.__total_size_prefix} {self.__hf_class.getModelsSize(self.__certain_models)}')
         self.__modelTableWidget.setCurrentCell(max(0, min(cur_row, self.__modelTableWidget.rowCount()-1)), 0)
         self.__delBtn.setEnabled(self.__modelTableWidget.rowCount() != 0)
         self.onModelDeleted.emit(model_name)
@@ -114,9 +108,6 @@ class HuggingFaceModelWidget(QWidget):
         else:
             self.__delBtn.setEnabled(False)
 
-    def __resetCacheDir(self):
-        self.__findPathWidget.resetCacheDir()
-
     def setCacheDir(self, cache_dir):
         # make directory tree if it is not existed
         os.makedirs(cache_dir, exist_ok=True)
@@ -129,7 +120,6 @@ class HuggingFaceModelWidget(QWidget):
         if len(models) == 0:
             self.__delBtn.setEnabled(False)
         self.__modelTableWidget.addModels(models)
-        self.__totalSizeLbl.setText(f'{self.__total_size_prefix} {self.__hf_class.getModelsSize(self.__certain_models)}')
         self.onCacheDirSet.emit(cache_dir)
 
     def getCurrentModelName(self):

@@ -93,10 +93,6 @@ class FindPathWidget(QWidget):
             self.__cache_dir = dirname
             self.__handleSettingCacheDir()
 
-    def resetCacheDir(self):
-        self.__cache_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
-        self.__handleSettingCacheDir()
-
     def __handleSettingCacheDir(self):
         self.__pathLineEdit.setText(self.__cache_dir)
         self.__settings_struct.setValue('CACHE_DIR', os.path.normpath(self.__cache_dir))
